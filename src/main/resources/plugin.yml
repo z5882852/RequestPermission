@@ -1,0 +1,4 @@
+name: RequestPermission
+version: '${project.version}'
+main: me.z5882852.requestpermission.RequestPermission
+description: 我的世界服务器玩家申请权限的插件
