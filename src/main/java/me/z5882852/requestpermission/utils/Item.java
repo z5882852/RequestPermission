@@ -8,6 +8,11 @@ public class Item {
         return itemStack.getType().toString() + ":" + String.valueOf(itemStack.getData().getData());
     }
 
+    public static String getItemId(String itemData) {
+        ItemStack itemStack = getItemStack(itemData);
+        return itemStack.getType().toString() + ":" + String.valueOf(itemStack.getData().getData());
+    }
+
     public static String getItemData(ItemStack itemStack) {
         return  Json.mapToJsonString(itemStack.serialize());
     }
@@ -15,5 +20,6 @@ public class Item {
     public static ItemStack getItemStack(String itemData) {
         return ItemStack.deserialize(Json.jsonStringToMap(itemData));
     }
+
 
 }
