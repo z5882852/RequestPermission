@@ -7,7 +7,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class MySQLManager {
@@ -51,7 +53,7 @@ public class MySQLManager {
     }
 
     public boolean insertRequest(String playerName, int requestId) {
-        if (getRequestIds(playerName).contains(requestId)) {
+        if (getRequestIds(playerName).contains(requestId) || requestId == -1) {
             return false;
         }
         try {
@@ -90,7 +92,7 @@ public class MySQLManager {
         try {
             Statement statement = conn.createStatement();
             ResultSet rs = statement.executeQuery(String.format("SELECT `requestId` FROM `%s` WHERE `name` = '%s'", permissionTable, name));
-            if (rs.next()) {
+            while (rs.next()) {
                 list.add(rs.getInt("requestId"));
             }
             rs.close();
@@ -121,13 +123,36 @@ public class MySQLManager {
         }
     }
 
-    public List<Integer> getNotResolveRequest() {
-        List<Integer> list = new ArrayList<>();
+    public String getCommand(int permissionId) {
+        String command = null;
         try {
             Statement statement = conn.createStatement();
-            ResultSet rs = statement.executeQuery(String.format("SELECT `requestId` FROM `%s` WHERE `resolve` = 1", permissionTable));
+            ResultSet rs = statement.executeQuery(String.format("SELECT `command` FROM `%s` WHERE `id` = %d", itemTable, permissionId));
             if (rs.next()) {
-                list.add(rs.getInt("requestId"));
+                command = rs.getString("command");
+            }
+            rs.close();
+            statement.close();
+            return command;
+        } catch (SQLException e) {
+            plugin.getLogger().severe("无法获取Command,请查看以下报错信息:");
+            e.printStackTrace();
+            return command;
+        }
+    }
+
+    public List<Map<String, String>> getNotResolveRequest() {
+        List<Map<String, String>> list = new ArrayList<>();
+        try {
+            Statement statement = conn.createStatement();
+            ResultSet rs = statement.executeQuery(String.format("SELECT `id`, `name`, `date`, `requestId` FROM `%s` WHERE `resolve` = 0", permissionTable));
+            while (rs.next()) {
+                Map<String, String> requestInfo = new HashMap<>();
+                requestInfo.put("id", rs.getString("id"));
+                requestInfo.put("name", rs.getString("name"));
+                requestInfo.put("date", rs.getString("date"));
+                requestInfo.put("requestId", rs.getString("requestId"));
+                list.add(requestInfo);
             }
             rs.close();
             statement.close();
@@ -139,11 +164,41 @@ public class MySQLManager {
         }
     }
 
+    public int getRequestId(int id) {
+        int requestId = -1;
+        try {
+            Statement statement = conn.createStatement();
+            ResultSet rs = statement.executeQuery(String.format("SELECT `requestId` FROM `%s` WHERE `id` = %d", permissionTable, id));
+            if (rs.next()) {
+                requestId = rs.getInt("requestId");
+            }
+            rs.close();
+            statement.close();
+            return requestId;
+        } catch (SQLException e) {
+            plugin.getLogger().severe("无法获取Command,请查看以下报错信息:");
+            e.printStackTrace();
+            return requestId;
+        }
+    }
+
     public boolean checkHasItem(String itemId) {
         if (getPermissionId(itemId) == -1) {
             return false;
         }
         return true;
+    }
+
+    public void resolveRequest(int id) {
+        try {
+            Statement stmt = conn.createStatement();
+            String sql = String.format("UPDATE `%s` SET `resolve`= 1 WHERE `id` = %d;", permissionTable, id);
+            stmt.executeUpdate(sql);
+            stmt.close();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("无法更新玩家,请查看以下报错信息:");
+            e.printStackTrace();
+        }
     }
 
     public void deleteItem(int permissionId) {

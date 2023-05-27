@@ -3,6 +3,7 @@ package me.z5882852.requestpermission.commands;
 import me.z5882852.requestpermission.utils.gui.AddGUI;
 import me.z5882852.requestpermission.utils.gui.RequestGUI;
 import me.z5882852.requestpermission.RequestPermission;
+import me.z5882852.requestpermission.utils.gui.ResponseGUI;
 import me.z5882852.requestpermission.utils.permission.AddPermission;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -66,6 +67,8 @@ public class PlayerCommandExecutor implements CommandExecutor {
                     sender.sendMessage(ChatColor.RED + "您不是一个玩家。");
                     return true;
                 }
+                Player player = (Player) sender;
+                ResponseGUI.openGUI(player);
                 return true;
             } else {
                 sender.sendMessage(ChatColor.RED + "你没有执行该命令的权限。");

@@ -5,6 +5,7 @@ import me.z5882852.requestpermission.utils.input.InputPrompt;
 import me.z5882852.requestpermission.utils.json.Json;
 import me.z5882852.requestpermission.utils.permission.AddPermission;
 import me.z5882852.requestpermission.utils.permission.Request;
+import me.z5882852.requestpermission.utils.permission.Response;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -34,7 +35,7 @@ public class ClickGUIEvent implements Listener {
         Inventory clickedInventory = event.getInventory();
         List<String> inventoryNames = new ArrayList<>();
         inventoryNames.add("[RP]申请权限");
-        inventoryNames.add("[RP]管理权限");
+        inventoryNames.add("[RP]权限管理");
         inventoryNames.add("[RP]权限设置");
         inventoryNames.add("[RP]添加权限");
         if (clickedInventory == null || !inventoryNames.contains(clickedInventory.getName())) {
@@ -46,15 +47,18 @@ public class ClickGUIEvent implements Listener {
             return;
         }
         clickedItem.setAmount(1);
-        player.sendMessage(ChatColor.GOLD + "你选择了物品：" + clickedItem.getType().toString());
         if (clickedInventory.getName().equals("[RP]申请权限")) {
             Request.RequestItem(player, clickedItem);
-        } else if (clickedInventory.getName().equals("[RP]管理权限")) {
-
+        } else if (clickedInventory.getName().equals("[RP]权限管理")) {
+            if (event.isLeftClick()) {
+                Response.acceptRequest(player, clickedItem);
+            } else if (event.isRightClick()) {
+                Response.rejectRequest(player, clickedItem);
+            }
         } else if (clickedInventory.getName().equals("[RP]权限设置")) {
 
         } else if (clickedInventory.getName().equals("[RP]添加权限")) {
-            // 关闭GUI
+            player.sendMessage(ChatColor.GOLD + "你选择了物品：" + clickedItem.getType().toString());
             Bukkit.getScheduler().runTaskLater(RequestPermission.thisPlugin, () -> player.closeInventory(), 2);
             InputPrompt.startInputConversation(player, input -> {
                 if (input != null) {
