@@ -2,3 +2,25 @@ name: RequestPermission
 version: '${project.version}'
 main: me.z5882852.requestpermission.RequestPermission
 description: 我的世界服务器玩家申请权限的插件
+
+commands:
+  requestpermission:
+    aliases:
+      - "rp"
+    usage: "/rp <open/add/setting/manage/reload>"
+    description: "权限申请"
+
+permissions:
+  requestpermission.default:
+    description: "玩家默认权限"
+    default: true
+    children:
+      requestpermission.default.open: true
+  requestpermission.admin:
+    description: "所有管理员权限"
+    default: op
+    children:
+      requestpermission.admin.add: true
+      requestpermission.admin.setting: true
+      requestpermission.admin.manage: true
+      requestpermission.admin.reload: true
