@@ -1,5 +1,12 @@
 package me.z5882852.requestpermission.utils.gui;
 
+import me.z5882852.requestpermission.RequestPermission;
+import me.z5882852.requestpermission.utils.input.InputPrompt;
+import me.z5882852.requestpermission.utils.json.Json;
+import me.z5882852.requestpermission.utils.permission.AddPermission;
+import me.z5882852.requestpermission.utils.permission.Request;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,8 +18,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClickGUI implements Listener {
-    public ClickGUI(JavaPlugin plugin) {
+public class ClickGUIEvent implements Listener {
+    public ClickGUIEvent(JavaPlugin plugin) {
 
     }
 
@@ -29,6 +36,7 @@ public class ClickGUI implements Listener {
         inventoryNames.add("[RP]申请权限");
         inventoryNames.add("[RP]管理权限");
         inventoryNames.add("[RP]权限设置");
+        inventoryNames.add("[RP]添加权限");
         if (clickedInventory == null || !inventoryNames.contains(clickedInventory.getName())) {
             return;
         }
@@ -37,14 +45,24 @@ public class ClickGUI implements Listener {
         if (clickedItem == null || clickedItem.getType().toString().equals("IRON_BLOCK") || clickedItem.equals(event.getView().getCursor())) {
             return;
         }
-        player.sendMessage("你点击了物品：" + clickedItem.getType().toString());
+        clickedItem.setAmount(1);
+        player.sendMessage(ChatColor.GOLD + "你选择了物品：" + clickedItem.getType().toString());
         if (clickedInventory.getName().equals("[RP]申请权限")) {
-            String itemData = clickedItem.serialize().toString();
-            System.out.println(itemData);
+            Request.RequestItem(player, clickedItem);
         } else if (clickedInventory.getName().equals("[RP]管理权限")) {
 
         } else if (clickedInventory.getName().equals("[RP]权限设置")) {
 
+        } else if (clickedInventory.getName().equals("[RP]添加权限")) {
+            // 关闭GUI
+            Bukkit.getScheduler().runTaskLater(RequestPermission.thisPlugin, () -> player.closeInventory(), 2);
+            InputPrompt.startInputConversation(player, input -> {
+                if (input != null) {
+                    AddPermission.addItemPermission(player, clickedItem, input);
+                } else {
+                    player.sendMessage(ChatColor.RED + "输入被取消或中断。");
+                }
+            });
         }
     }
 }

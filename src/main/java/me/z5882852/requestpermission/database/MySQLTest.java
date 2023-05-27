@@ -59,10 +59,9 @@ public class MySQLTest {
         Statement statement = conn.createStatement();
         String sql = String.format("CREATE TABLE `%s` (", tableName) +
                 "  `id` int NOT NULL AUTO_INCREMENT," +
-                "  `name` text NOT NULL," +
-                "  `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP," +
-                "  `requestId` int NOT NULL," +
-                "  `resolve` int (0) NOT NULL DEFAULT 0," +
+                "  `item` text NOT NULL," +
+                "  `itemId` text NOT NULL," +
+                "  `command` text NOT NULL," +
                 "  PRIMARY KEY (`id`)" +
                 ") ENGINE = innodb";
         statement.executeUpdate(sql);
@@ -73,8 +72,10 @@ public class MySQLTest {
         Statement statement = conn.createStatement();
         String sql = String.format("CREATE TABLE `%s` (", tableName) +
                 "  `id` int NOT NULL AUTO_INCREMENT," +
-                "  `item` text NOT NULL," +
-                "  `command` text NOT NULL," +
+                "  `name` text NOT NULL," +
+                "  `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+                "  `requestId` int NOT NULL," +
+                "  `resolve` int (0) NOT NULL DEFAULT 0," +
                 "  PRIMARY KEY (`id`)" +
                 ") ENGINE = innodb";
         statement.executeUpdate(sql);

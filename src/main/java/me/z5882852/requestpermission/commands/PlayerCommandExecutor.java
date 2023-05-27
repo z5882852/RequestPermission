@@ -1,7 +1,9 @@
 package me.z5882852.requestpermission.commands;
 
+import me.z5882852.requestpermission.utils.gui.AddGUI;
 import me.z5882852.requestpermission.utils.gui.RequestGUI;
 import me.z5882852.requestpermission.RequestPermission;
+import me.z5882852.requestpermission.utils.permission.AddPermission;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -27,8 +29,8 @@ public class PlayerCommandExecutor implements CommandExecutor {
         if (args[0].equalsIgnoreCase("open")) {
             if (sender.hasPermission("requestpermission.default.open")) {
                 if (!(sender instanceof Player)) {
-                    sender.sendMessage(ChatColor.RED + "[WorldLimits]您不是一个玩家。");
-                    return false;
+                    sender.sendMessage(ChatColor.RED + "您不是一个玩家。");
+                    return true;
                 }
                 Player player = (Player) sender;
                 RequestGUI.openGUI(player);
@@ -39,34 +41,40 @@ public class PlayerCommandExecutor implements CommandExecutor {
         } else if (args[0].equalsIgnoreCase("add")) {
             if (sender.hasPermission("requestpermission.admin.add")) {
                 if (!(sender instanceof Player)) {
-                    sender.sendMessage(ChatColor.RED + "[WorldLimits]您不是一个玩家。");
-                    return false;
+                    sender.sendMessage(ChatColor.GOLD + "用法/rp add <给予权限的命令> 。");
+                    return true;
                 }
+                Player player = (Player) sender;
+                AddGUI.openGUI(player);
+                return true;
             } else {
                 sender.sendMessage(ChatColor.RED + "你没有执行该命令的权限。");
             }
         } else if (args[0].equalsIgnoreCase("setting")) {
             if (sender.hasPermission("requestpermission.admin.setting")) {
                 if (!(sender instanceof Player)) {
-                    sender.sendMessage(ChatColor.RED + "[WorldLimits]您不是一个玩家。");
-                    return false;
+                    sender.sendMessage(ChatColor.RED + "您不是一个玩家。");
+                    return true;
                 }
+                return true;
             } else {
                 sender.sendMessage(ChatColor.RED + "你没有执行该命令的权限。");
             }
         } else if (args[0].equalsIgnoreCase("manage")) {
             if (sender.hasPermission("requestpermission.admin.manage")) {
                 if (!(sender instanceof Player)) {
-                    sender.sendMessage(ChatColor.RED + "[WorldLimits]您不是一个玩家。");
-                    return false;
+                    sender.sendMessage(ChatColor.RED + "您不是一个玩家。");
+                    return true;
                 }
+                return true;
             } else {
                 sender.sendMessage(ChatColor.RED + "你没有执行该命令的权限。");
             }
         } else if (args[0].equalsIgnoreCase("reload")) {
             if (sender.hasPermission("requestpermission.admin.reload")) {
                 RequestPermission.thisPlugin.reloadCfg();
-
+                sender.sendMessage(ChatColor.GREEN + "配置文件已重新加载！");
+                return true;
             } else {
                 sender.sendMessage(ChatColor.RED + "你没有执行该命令的权限。");
             }
