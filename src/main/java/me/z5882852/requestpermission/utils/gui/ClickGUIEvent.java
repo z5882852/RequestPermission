@@ -6,6 +6,7 @@ import me.z5882852.requestpermission.utils.json.Json;
 import me.z5882852.requestpermission.utils.permission.AddPermission;
 import me.z5882852.requestpermission.utils.permission.Request;
 import me.z5882852.requestpermission.utils.permission.Response;
+import me.z5882852.requestpermission.utils.permission.Setting;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -56,7 +57,20 @@ public class ClickGUIEvent implements Listener {
                 Response.rejectRequest(player, clickedItem);
             }
         } else if (clickedInventory.getName().equals("[RP]权限设置")) {
-
+            if (event.isLeftClick()) {
+                // 左键 修改指令
+                Bukkit.getScheduler().runTaskLater(RequestPermission.thisPlugin, () -> player.closeInventory(), 2);
+                InputPrompt.startInputConversation(player, input -> {
+                    if (input != null) {
+                        Setting.resetPermissionCommand(player, clickedItem, input);
+                    } else {
+                        player.sendMessage(ChatColor.RED + "输入被取消或中断。");
+                    }
+                });
+            } else if (event.isRightClick()) {
+                // 右键 删除
+                Setting.deletePermission(player, clickedItem);
+            }
         } else if (clickedInventory.getName().equals("[RP]添加权限")) {
             player.sendMessage(ChatColor.GOLD + "你选择了物品：" + clickedItem.getType().toString());
             Bukkit.getScheduler().runTaskLater(RequestPermission.thisPlugin, () -> player.closeInventory(), 2);

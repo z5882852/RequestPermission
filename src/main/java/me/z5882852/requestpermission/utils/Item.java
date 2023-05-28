@@ -18,7 +18,11 @@ public class Item {
     }
 
     public static ItemStack getItemStack(String itemData) {
-        return ItemStack.deserialize(Json.jsonStringToMap(itemData));
+        try {
+            return ItemStack.deserialize(Json.jsonStringToMap(itemData));
+        } catch (Exception e) {
+            return null;
+        }
     }
 
 

@@ -10,10 +10,14 @@ import org.bukkit.inventory.ItemStack;
 public class AddPermission {
     public static void addItemPermission(Player player, ItemStack itemStack, String command) {
         MySQLManager mySQLManager = new MySQLManager();
-        if (mySQLManager.insertItem(Item.getItemData(itemStack), Item.getItemId(itemStack), command)) {
-            player.sendMessage(ChatColor.GREEN + Item.getItemId(itemStack) + "添加权限成功");
-        } else {
-            player.sendMessage(ChatColor.RED + Item.getItemId(itemStack) + "添加权限失败,请查看是否已存在相同物品");
+        try {
+            if (mySQLManager.insertItem(Item.getItemData(itemStack), Item.getItemId(itemStack), command)) {
+                player.sendMessage(ChatColor.GREEN + "添加权限成功");
+            } else {
+                player.sendMessage(ChatColor.RED + "添加权限失败,请查看是否已存在相同物品");
+            }
+        } catch (IllegalArgumentException e) {
+            player.sendMessage(ChatColor.RED + "添加权限失败,无法解析该物品NBT数据");
         }
         mySQLManager.closeConn();
     }

@@ -141,6 +141,29 @@ public class MySQLManager {
         }
     }
 
+    public List<Map<String, String>> getAllItemPermission() {
+        List<Map<String, String>> list = new ArrayList<>();
+        try {
+            Statement statement = conn.createStatement();
+            ResultSet rs = statement.executeQuery(String.format("SELECT `id`, `item`, `itemId`, `command` FROM `%s`", itemTable));
+            while (rs.next()) {
+                Map<String, String> requestInfo = new HashMap<>();
+                requestInfo.put("id", rs.getString("id"));
+                requestInfo.put("itemData", rs.getString("item"));
+                requestInfo.put("itemId", rs.getString("itemId"));
+                requestInfo.put("command", rs.getString("command"));
+                list.add(requestInfo);
+            }
+            rs.close();
+            statement.close();
+            return list;
+        } catch (SQLException e) {
+            plugin.getLogger().severe("无法获取权限数据,请查看以下报错信息:");
+            e.printStackTrace();
+            return list;
+        }
+    }
+
     public List<Map<String, String>> getNotResolveRequest() {
         List<Map<String, String>> list = new ArrayList<>();
         try {
@@ -182,6 +205,34 @@ public class MySQLManager {
         }
     }
 
+    public boolean setCommand(int permissionId, String newCommand) {
+        try {
+            Statement stmt = conn.createStatement();
+            String sql = String.format("UPDATE `%s` SET `command`= `%s` WHERE `id` = %d;", itemTable, newCommand, permissionId);
+            stmt.executeUpdate(sql);
+            stmt.close();
+            return true;
+        } catch (SQLException e) {
+            plugin.getLogger().severe("无法更新Command,请查看以下报错信息:");
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean setCommand(String itemId, String newCommand) {
+        try {
+            Statement stmt = conn.createStatement();
+            String sql = String.format("UPDATE `%s` SET `command`= '%s' WHERE `itemId` = '%s';", itemTable, newCommand, itemId);
+            stmt.executeUpdate(sql);
+            stmt.close();
+            return true;
+        } catch (SQLException e) {
+            plugin.getLogger().severe("无法更新Command,请查看以下报错信息:");
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public boolean checkHasItem(String itemId) {
         if (getPermissionId(itemId) == -1) {
             return false;
@@ -196,19 +247,34 @@ public class MySQLManager {
             stmt.executeUpdate(sql);
             stmt.close();
         } catch (SQLException e) {
-            plugin.getLogger().severe("无法更新玩家,请查看以下报错信息:");
+            plugin.getLogger().severe("无法更新玩家Resolve,请查看以下报错信息:");
             e.printStackTrace();
         }
     }
 
+    public boolean deleteItem(String itemId) {
+        try {
+            Statement statement = conn.createStatement();
+            String sql = String.format("DELETE FROM `%s` WHERE `itemId`= '%s';", itemTable, itemId);
+            statement.executeUpdate(sql);
+            statement.close();
+            return true;
+        } catch (SQLException e) {
+            plugin.getLogger().severe("删除权限数据失败,请查看以下报错信息:");
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
     public void deleteItem(int permissionId) {
         try {
             Statement statement = conn.createStatement();
-            String sql = String.format("DELETE FROM `%s` WHERE `id`=%d;", itemTable, permissionId);
+            String sql = String.format("DELETE FROM `%s` WHERE `id` = %d;", itemTable, permissionId);
             statement.executeUpdate(sql);
             statement.close();
         } catch (SQLException e) {
-            plugin.getLogger().severe("删除请求数据失败,请查看以下报错信息:");
+            plugin.getLogger().severe("删除权限数据失败,请查看以下报错信息:");
             e.printStackTrace();
         }
     }
@@ -216,7 +282,7 @@ public class MySQLManager {
     public void deleteRequest(int id) {
         try {
             Statement statement = conn.createStatement();
-            String sql = String.format("DELETE FROM `%s` WHERE `id`=%d;", permissionTable, id);
+            String sql = String.format("DELETE FROM `%s` WHERE `id` = %d;", permissionTable, id);
             statement.executeUpdate(sql);
             statement.close();
         } catch (SQLException e) {
